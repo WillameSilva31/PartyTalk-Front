@@ -5,7 +5,7 @@ import { TiWeatherWindyCloudy } from "react-icons/ti";
 import socket from 'socket.io-client';
 import bgN from './assets/vectorstock_37001775.png';
 
-const io = socket("http://localhost:4000");
+const io = socket("https://partytalk.adaptable.app");
 
 function App() {
 
