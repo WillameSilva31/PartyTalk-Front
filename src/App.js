@@ -5,12 +5,12 @@ import { TiWeatherWindyCloudy } from "react-icons/ti";
 import socket from 'socket.io-client';
 import bgN from './assets/vectorstock_37001775.png';
 
-const io = socket("https://partytalk.adaptable.app");
+const io = socket("http://localhost:4000");
 
 function App() {
 
   const [name, setName] = useState("");
-  const [myId,setMyId] = useState("");
+  let [myId, setMyId] = useState("");
   const [joined, setJoined] = useState(false);
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
@@ -20,8 +20,8 @@ function App() {
   useEffect(() => {
     io.on("users", (users) => { setUsers(users) })
     io.on("message", (message) => setMessages((messages) => [...messages, message]));
-    io.on("connect", ()=>setMyId(io.id));
-    }, [])
+    io.on("connect", () => setMyId(io.id));
+  }, [])
 
   const handleJoin = () => {
     if (name) {
@@ -32,7 +32,7 @@ function App() {
 
   const handleMessage = () => {
     if (message) {
-      io.emit("message", { message, name });
+      io.emit("message", { message, name, myId });
       setMessage("");
     }
   }
@@ -48,7 +48,7 @@ function App() {
           </div>
           <span className='Digite'>Digite seu nome</span>
           <input value={name} onChange={(e) => setName(e.target.value)} className='input' />
-          <button className="button-82-pushable" role="button" onClick={()=> handleJoin()}>
+          <button className="button-82-pushable" role="button" onClick={() => handleJoin()}>
             <span className="button-82-shadow"></span>
             <span className="button-82-edge"></span>
             <span className="button-82-front text">
@@ -78,8 +78,9 @@ function App() {
               <div id='PT'>PartyTalk</div>
               <div id='Last_Message'>
                 {users.map((user, index) => (
-                  <span className='Users' key={null}>{user.name}{index + 1 < users.length ? ", " : ""}</span>
-
+                  <span className='Users' key={null}>
+                    {user.name}{index + 1 < users.length && users.length !==0 ? ", " : ""}
+                  </span>
                 ))}
               </div>
             </div>
@@ -91,9 +92,9 @@ function App() {
         <div className='Chat_Messages'>
           < div className='Chat_Messages_Area'>
             {messages.map((message, index) => (
-              <div className={message.name === name ? "User_Container_Message L" : "User_Container_Message R"}>
+              <div className={message.userId === myId ? "User_Container_Message L" : "User_Container_Message R"}>
                 <span
-                  className={message.name === name ? 'User_My_Message' : 'User_Others_Messages'}
+                  className={message.userId === myId ? 'User_My_Message' : 'User_Others_Messages'}
                   key={index}
                 >{message.name ? `${message.name}: ` : ''}{message.message}
                 </span>
@@ -105,17 +106,22 @@ function App() {
 
           <div className='Chat_Input_Area'>
             <div className='Input_Area'>
-              <input className='Input_Message' placeholder='Digite aqui...' value={message} onChange={(e) => setMessage(e.target.value)} />
-            </div>
-            <div className='Send_Message'>
-              <div className='Send_Button' onKeyDown={(e)=> {
-                if(e.key === "Enter"){
+              <input className='Input_Message' placeholder='Digite aqui...' value={message} onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  console.log("enter");
                   e.preventDefault();
                   handleMessage();
                 }
-              }} onClick={() => handleMessage()}>
-                <IoMdSend />
-              </div>
+              }} onChange={(e) => setMessage(e.target.value)} />
+            </div>
+            <div className='Send_Message'>
+              <button class="button-82-pushable enviar" role="button" onClick={() => handleMessage()}>
+                <span class="button-82-shadow eviar" ></span>
+                <span class="button-82-edge enviar"></span>
+                <span class="button-82-front text">
+                  <IoMdSend />
+                </span>
+              </button>
             </div>
           </div>
         </div>
