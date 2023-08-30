@@ -25,7 +25,7 @@ function App() {
 
   const handleJoin = () => {
     if (name) {
-      io.emit("join", name);
+      io.emit("join", name );
       setJoined(true);
     }
   }
@@ -92,9 +92,9 @@ function App() {
         <div className='Chat_Messages'>
           < div className='Chat_Messages_Area'>
             {messages.map((message, index) => (
-              <div className={message.userId === myId ? "User_Container_Message L" : "User_Container_Message R"}>
+              <div className={message.name === name? "User_Container_Message L" : "User_Container_Message R"}>
                 <span
-                  className={message.userId === myId ? 'User_My_Message' : 'User_Others_Messages'}
+                  className={message.name === name? 'User_My_Message' : 'User_Others_Messages'}
                   key={index}
                 >{message.name ? `${message.name}: ` : ''}{message.message}
                 </span>
